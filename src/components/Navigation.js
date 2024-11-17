@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navbar, Button, Dropdown } from 'react-bootstrap';
+import { Navbar, Button, Dropdown, Nav, Container } from 'react-bootstrap';
 import { ethers } from 'ethers';
 import logo from '../logo.png';
 
@@ -28,23 +28,35 @@ const Navigation = ({ account, onDisconnect }) => {
   };
 
   return (
-    <Navbar className='my-3 d-flex justify-content-between'>
+    <Navbar className='my-3'>
+     <Container fluid className="px-3">
       <div className="d-flex align-items-center">
         <img
           alt="logo"
           src={logo}
-          width="100"
-          height="100"
-          className="d-inline-block align-top mx-3"
+          width="80"
+          height="80"
+          className="d-none d-sm-inline-block align-top mx-3"
         />
         <Navbar.Brand href="#">URDEX Faucet</Navbar.Brand>
       </div>
-      
+
+     <Nav className="mx-auto">
+        <Button 
+          href="#dex-aggregator" 
+          variant="outline-primary"
+          className="px-4 py-2"
+        >
+          Go to Dex Aggregator
+        </Button>
+      </Nav>
+      <div className="ms-auto pe-3">
       {!account ? (
         <Button
           onClick={connectHandler}
           disabled={isConnecting}
           variant="primary"
+          className="px-4 py-2" 
         >
           {isConnecting ? 'Connecting...' : 'Connect Wallet'}
         </Button>
@@ -72,6 +84,8 @@ const Navigation = ({ account, onDisconnect }) => {
           </Dropdown.Menu>
         </Dropdown>
       )}
+      </div>
+       </Container>
     </Navbar>
   );
 };

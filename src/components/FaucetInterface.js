@@ -80,16 +80,16 @@ const FaucetInterface = ({ account, faucetContract, tk1Contract, tk2Contract }) 
   };
 
   return (
-    <Container className="mt-4">
+    <Container className="mt-5"> {/* Increased top margin */}
       <Card className="shadow">
-        <Card.Header className="bg-primary text-white">
+        <Card.Header>
           <h4 className="mb-0">Token Faucet</h4>
           <small>Get TK1 and TK2 tokens for testing the DEX Aggregator</small>
         </Card.Header>
         <Card.Body>
           <Row className="mb-4">
             <Col md={6}>
-              <Card className="text-center h-100">
+              <Card className="token-balance-card mb-3 mb-md-0"> {/* Added custom class and margin */}
                 <Card.Body>
                   <Card.Title>TK1 Balance</Card.Title>
                   <h3>{tk1Balance}</h3>
@@ -97,7 +97,7 @@ const FaucetInterface = ({ account, faucetContract, tk1Contract, tk2Contract }) 
               </Card>
             </Col>
             <Col md={6}>
-              <Card className="text-center h-100">
+              <Card className="token-balance-card"> {/* Added custom class */}
                 <Card.Body>
                   <Card.Title>TK2 Balance</Card.Title>
                   <h3>{tk2Balance}</h3>
@@ -107,14 +107,15 @@ const FaucetInterface = ({ account, faucetContract, tk1Contract, tk2Contract }) 
           </Row>
 
           <div className="text-center mb-4">
-            <p className="text-muted">
-              <i className="bi bi-clock"></i> Time until next request: {formatTimeRemaining(cooldownTime)}
+            <p className="cooldown-timer"> {/* Added custom class */}
+              <i className="bi bi-clock me-2"></i> {/* Added margin */}
+              Time until next request: {formatTimeRemaining(cooldownTime)}
             </p>
           </div>
 
           <Button 
             variant="primary"
-            className="w-100 mb-3"
+            className="w-100 mb-3 py-3"
             onClick={handleRequest}
             disabled={isRequesting || cooldownTime > 0}
           >
@@ -148,9 +149,9 @@ const FaucetInterface = ({ account, faucetContract, tk1Contract, tk2Contract }) 
           )}
         </Card.Body>
       </Card>
-            <div className="text-center mt-3 text-muted">
+     <div className="text-center mt-4 text-muted"> {/* Increased top margin */}
         <small>
-          <i className="bi bi-info-circle me-1"></i>
+          <i className="bi bi-info-circle me-2"></i> {/* Added margin */}
           Having trouble? Try clearing your MetaMask activity tab data and retry.
         </small>
       </div>
