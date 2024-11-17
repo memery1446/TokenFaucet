@@ -1,27 +1,52 @@
-// We require the Hardhat Runtime Environment explicitly here. This is optional
-// but useful for running the script in a standalone fashion through `node <script>`.
-//
-// You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
-// will compile your contracts, add the Hardhat Runtime Environment's members to the
-// global scope, and execute the script.
-const hre = require("hardhat");
+const { ethers } = require("hardhat");
 
 async function main() {
-  const NAME = 'Dapp University'
-  const SYMBOL = 'DAPP'
-  const MAX_SUPPLY = '1000000'
+  // Deploy test tokens for local testing
+  console.log("Deploying test tokens for local Hardhat testing...");
+  
+  const Token = await ethers.getContractFactory("Token");
+  const tk1 = await Token.deploy("Token One", "TK1");
+  await tk1.deployed();
+  console.log("Test TK1 deployed to:", tk1.address);
+  
+  const tk2 = await Token.deploy("Token Two", "TK2");
+  await tk2.deployed();
+  console.log("Test TK2 deployed to:", tk2.address);
 
-  // Deploy Token
-  const Token = await hre.ethers.getContractFactory('Token')
-  let token = await Token.deploy(NAME, SYMBOL, MAX_SUPPLY)
+  // Deploy the faucet
+  console.log("\nDeploying faucet...");
+  const SimpleFaucet = await ethers.getContractFactory("SimpleFaucet");
+  const faucet = await SimpleFaucet.deploy(tk1.address, tk2.address);
+  await faucet.deployed();
+  console.log("Faucet deployed to:", faucet.address);
 
-  await token.deployed()
-  console.log(`Token deployed to: ${token.address}\n`)
+  // Fund the faucet with test tokens
+  const fundAmount = ethers.utils.parseEther("1000");
+  await tk1.transfer(faucet.address, fundAmount);
+  await tk2.transfer(faucet.address, fundAmount);
+  console.log("\nFaucet funded with 1000 of each test token");
+
+  // For easy reference when testing
+  console.log("\nDeployed contract addresses:");
+  console.log("TK1:", tk1.address);
+  console.log("TK2:", tk2.address);
+  console.log("Faucet:", faucet.address);
+  
+  // Save the contract addresses for testing
+  console.log("\nSave these addresses for your test files!");
+  console.log(`
+  Export these variables in your test files:
+  const TK1_ADDRESS = "${tk1.address}";
+  const TK2_ADDRESS = "${tk2.address}";
+  const FAUCET_ADDRESS = "${faucet.address}";
+  `);
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
+
+  
