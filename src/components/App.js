@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Card } from 'react-bootstrap';
 import { ethers } from 'ethers';
 
 // Components
@@ -21,11 +21,14 @@ function App() {
   const [tk1Contract, setTk1Contract] = useState(null);
   const [tk2Contract, setTk2Contract] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [provider, setProvider] = useState(null);
 
   const loadBlockchainData = async () => {
     try {
+      setIsLoading(true);
       // Initiate provider
       const provider = new ethers.providers.Web3Provider(window.ethereum);
+      setProvider(provider);
       const signer = provider.getSigner();
 
       // Fetch accounts
@@ -68,6 +71,10 @@ function App() {
     localStorage.removeItem('walletConnected');
   };
 
+  const handleConnect = async () => {
+    await loadBlockchainData();
+  };
+
   useEffect(() => {
     if (window.ethereum) {
       // Handle account changes
@@ -76,8 +83,7 @@ function App() {
           setAccount(ethers.utils.getAddress(accounts[0]));
           loadBlockchainData();
         } else {
-          setAccount(null);
-          setBalance(0);
+          handleDisconnect();
         }
       });
 
@@ -100,27 +106,33 @@ function App() {
   }, []);
 
   return (
-    <Container>
-      <Navigation 
-        account={account}
-        onDisconnect={handleDisconnect}
-      />
-
-      {!account ? (
-        <div className="text-center my-5">
-          <h2>Welcome to URDEX Faucet</h2>
-          <p>Please connect your wallet to continue</p>
-        </div>
-      ) : isLoading ? (
-        <Loading />
-      ) : (
-        <FaucetInterface 
-          account={account}
-          faucetContract={faucetContract}
-          tk1Contract={tk1Contract}
-          tk2Contract={tk2Contract}
-        />
-      )}
+    <Container className="px-0">
+      <Card className="shadow-sm mb-4">
+        <Card.Body className="px-3 py-3">
+          <Navigation 
+            account={account}
+            onDisconnect={handleDisconnect}
+            onConnect={handleConnect}
+          />
+        </Card.Body>
+      </Card>
+      <Container>
+        {!account ? (
+          <div className="text-center my-5">
+            <h2>Welcome to URDEX Faucet</h2>
+            <p>Please connect your wallet to continue</p>
+          </div>
+        ) : isLoading ? (
+          <Loading />
+        ) : (
+          <FaucetInterface 
+            account={account}
+            faucetContract={faucetContract}
+            tk1Contract={tk1Contract}
+            tk2Contract={tk2Contract}
+          />
+        )}
+      </Container>
     </Container>
   );
 }

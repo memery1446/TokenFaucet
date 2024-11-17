@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Navbar, Button, Dropdown, Nav, Container } from 'react-bootstrap';
-import { ethers } from 'ethers';
 import logo from '../logo.png';
 
-const Navigation = ({ account, onDisconnect }) => {
+const Navigation = ({ account, onDisconnect, onConnect }) => {
   const [isConnecting, setIsConnecting] = useState(false);
 
   const connectHandler = async () => {
@@ -11,6 +10,7 @@ const Navigation = ({ account, onDisconnect }) => {
       setIsConnecting(true);
       if (window.ethereum) {
         await window.ethereum.request({ method: 'eth_requestAccounts' });
+        await onConnect();
       } else {
         alert('Please install MetaMask!');
       }
@@ -56,7 +56,6 @@ const Navigation = ({ account, onDisconnect }) => {
           onClick={connectHandler}
           disabled={isConnecting}
           variant="primary"
-          className="px-4 py-2" 
         >
           {isConnecting ? 'Connecting...' : 'Connect Wallet'}
         </Button>
@@ -76,7 +75,7 @@ const Navigation = ({ account, onDisconnect }) => {
             </Dropdown.Item>
             <Dropdown.Divider />
             <Dropdown.Item 
-              onClick={onDisconnect} 
+              onClick={onDisconnect}
               className="text-danger"
             >
               Disconnect
@@ -85,7 +84,7 @@ const Navigation = ({ account, onDisconnect }) => {
         </Dropdown>
       )}
       </div>
-       </Container>
+     </Container>
     </Navbar>
   );
 };

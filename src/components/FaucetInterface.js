@@ -84,7 +84,7 @@ const FaucetInterface = ({ account, faucetContract, tk1Contract, tk2Contract }) 
       <Card className="shadow">
         <Card.Header>
           <h4 className="mb-0">Token Faucet</h4>
-          <small>Get TK1 and TK2 tokens for testing the DEX Aggregator</small>
+          <small>Get TK1 and TK2 tokens for testing the URDEX Aggregator</small>
         </Card.Header>
         <Card.Body>
           <Row className="mb-4">
