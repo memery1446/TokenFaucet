@@ -148,6 +148,12 @@ const FaucetInterface = ({ account, faucetContract, tk1Contract, tk2Contract }) 
           )}
         </Card.Body>
       </Card>
+            <div className="text-center mt-3 text-muted">
+        <small>
+          <i className="bi bi-info-circle me-1"></i>
+          Having trouble? Try clearing your MetaMask activity tab data and retry.
+        </small>
+      </div>
     </Container>
   );
 };

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Navbar, Button } from 'react-bootstrap';
+import { Navbar, Button, Dropdown } from 'react-bootstrap';
 import { ethers } from 'ethers';
 import logo from '../logo.png';
 
-const Navigation = ({ account }) => {
+const Navigation = ({ account, onDisconnect }) => {
   const [isConnecting, setIsConnecting] = useState(false);
 
   const connectHandler = async () => {
@@ -33,23 +33,47 @@ const Navigation = ({ account }) => {
         <img
           alt="logo"
           src={logo}
-          width="40"
-          height="40"
+          width="100"
+          height="100"
           className="d-inline-block align-top mx-3"
         />
         <Navbar.Brand href="#">URDEX Faucet</Navbar.Brand>
       </div>
       
-      <Button
-        onClick={connectHandler}
-        disabled={isConnecting}
-        variant={account ? "outline-success" : "primary"}
-      >
-        {isConnecting ? 'Connecting...' : 
-         account ? truncateAddress(account) : 'Connect Wallet'}
-      </Button>
+      {!account ? (
+        <Button
+          onClick={connectHandler}
+          disabled={isConnecting}
+          variant="primary"
+        >
+          {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+        </Button>
+      ) : (
+        <Dropdown>
+          <Dropdown.Toggle variant="outline-success" id="dropdown-basic">
+            {truncateAddress(account)}
+          </Dropdown.Toggle>
+
+          <Dropdown.Menu align="end">
+            <Dropdown.Item 
+              href={`https://sepolia.etherscan.io/address/${account}`} 
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View on Etherscan
+            </Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item 
+              onClick={onDisconnect} 
+              className="text-danger"
+            >
+              Disconnect
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
+      )}
     </Navbar>
   );
-}
+};
 
 export default Navigation;
