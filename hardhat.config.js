@@ -8,7 +8,7 @@ module.exports = {
       chainId: 31337,
       mining: {
         auto: true,
-        interval: 1000
+        interval: 5000
       }
     },
     localhost: {

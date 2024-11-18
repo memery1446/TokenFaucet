@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Web3 from 'web3';
 import { Container, Button, Alert } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import DepositTokens from './components/DepositTokens';
 
 function App() {
   const [status, setStatus] = useState('');
@@ -59,7 +60,7 @@ function App() {
 
   return (
     <Container className="py-5 text-center">
-      <h1>Get Test Tokens</h1>
+      <h1>Token Faucet</h1>
       
       {status && (
         <Alert 
@@ -95,6 +96,8 @@ function App() {
           Make sure you're connected to Hardhat Network (Chain ID: 31337)
         </small>
       </div>
+
+      <DepositTokens />
     </Container>
   );
 }
