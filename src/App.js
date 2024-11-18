@@ -1,104 +1,126 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Web3 from 'web3';
-import { Container, Button, Alert } from 'react-bootstrap';
+import { Container, Alert, Navbar, Nav, Card, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import DepositTokens from './components/DepositTokens';
+import Whitelist from './components/Whitelist';
+import RequestTokens from './components/RequestTokens';
+import WithdrawTokens from './components/WithdrawTokens';
 
 function App() {
   const [status, setStatus] = useState('');
-  const [processing, setProcessing] = useState(false);
+  const [isOwner, setIsOwner] = useState(false);
 
-  const requestTokens = async (isTK1) => {
-    if (processing) return;
-    setProcessing(true);
-    
-    try {
-      setStatus('Connecting...');
-      if (!window.ethereum) {
-        throw new Error('Please install MetaMask');
+  useEffect(() => {
+    const checkOwner = async () => {
+      if (window.ethereum) {
+        const web3 = new Web3(window.ethereum);
+        try {
+          const accounts = await web3.eth.getAccounts();
+          const response = await fetch('/deployedAddresses.json');
+          const addresses = await response.json();
+          const faucetABI = [
+            {
+              "inputs": [],
+              "name": "owner",
+              "outputs": [{"name": "", "type": "address"}],
+              "stateMutability": "view",
+              "type": "function"
+            }
+          ];
+          const faucet = new web3.eth.Contract(faucetABI, addresses.FAUCET_ADDRESS);
+          const owner = await faucet.methods.owner().call();
+          setIsOwner(accounts[0].toLowerCase() === owner.toLowerCase());
+        } catch (error) {
+          console.error('Error checking owner:', error);
+        }
       }
-
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const web3 = new Web3(window.ethereum);
-      
-      // Load contract addresses
-      const response = await fetch('/deployedAddresses.json');
-      const addresses = await response.json();
-      
-      // Get user address
-      const accounts = await web3.eth.getAccounts();
-      const userAddress = accounts[0];
-
-      // Simple ABI for the faucet function
-      const faucetABI = [{
-        "inputs": [{"name": "isTK1", "type": "bool"}],
-        "name": "requestTokens",
-        "outputs": [],
-        "stateMutability": "nonpayable",
-        "type": "function"
-      }];
-
-      setStatus('Requesting tokens...');
-      const faucet = new web3.eth.Contract(faucetABI, addresses.FAUCET_ADDRESS);
-
-      // Send transaction with explicit gas settings
-      await faucet.methods.requestTokens(isTK1).send({
-        from: userAddress,
-        gas: 200000,
-        gasPrice: web3.utils.toWei('1', 'gwei')
-      });
-
-      setStatus(`✅ Tokens sent! Check your wallet.`);
-      
-    } catch (error) {
-      console.error('Error:', error);
-      setStatus(`❌ Error: ${error.message}`);
-    } finally {
-      setProcessing(false);
-    }
-  };
+    };
+    checkOwner();
+  }, []);
 
   return (
-    <Container className="py-5 text-center">
-      <h1>Token Faucet</h1>
-      
-      {status && (
-        <Alert 
-          variant={status.includes('✅') ? 'success' : 'info'} 
-          className="my-4"
-          dismissible
-          onClose={() => setStatus('')}
-        >
-          {status}
-        </Alert>
-      )}
+    <div className="d-flex flex-column min-vh-100">
+      <Navbar bg="light" expand="lg" className="shadow-sm">
+        <Container>
+          <Navbar.Brand href="#home">Token Faucet</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="ms-auto">
+              <Nav.Link href="#home">Home</Nav.Link>
+              {isOwner && <Nav.Link href="#admin">Admin</Nav.Link>}
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
 
-      <div className="d-grid gap-3" style={{ maxWidth: '200px', margin: '0 auto' }}>
-        <Button 
-          variant="primary"
-          onClick={() => requestTokens(true)}
-          disabled={processing}
-        >
-          {processing ? 'Processing...' : 'Get TK1'}
-        </Button>
+      <Container className="py-5">
+        <h1 className="text-center mb-5">Token Faucet</h1>
         
-        <Button 
-          variant="secondary"
-          onClick={() => requestTokens(false)}
-          disabled={processing}
-        >
-          {processing ? 'Processing...' : 'Get TK2'}
-        </Button>
-      </div>
+        {status && (
+          <Alert 
+            variant={status.includes('✅') ? 'success' : 'info'} 
+            className="my-4"
+            dismissible
+            onClose={() => setStatus('')}
+          >
+            {status}
+          </Alert>
+        )}
 
-      <div className="mt-4">
-        <small className="text-muted">
-          Make sure you're connected to Hardhat Network (Chain ID: 31337)
-        </small>
-      </div>
+        <Row className="g-4">
+          <Col xs={12}>
+            <Card className="shadow-sm">
+              <Card.Body>
+                <Card.Title>Request Tokens</Card.Title>
+                <RequestTokens setStatus={setStatus} />
+              </Card.Body>
+            </Card>
+          </Col>
 
-      <DepositTokens />
-    </Container>
+          {isOwner && (
+            <>
+              <Col md={6}>
+                <Card className="shadow-sm h-100">
+                  <Card.Body>
+                    <Card.Title>Deposit Tokens</Card.Title>
+                    <DepositTokens />
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col md={6}>
+                <Card className="shadow-sm h-100">
+                  <Card.Body>
+                    <Card.Title>Withdraw Tokens</Card.Title>
+                    <WithdrawTokens />
+                  </Card.Body>
+                </Card>
+              </Col>
+              <Col xs={12}>
+                <Card className="shadow-sm">
+                  <Card.Body>
+                    <Card.Title>Manage Whitelist</Card.Title>
+                    <Whitelist />
+                  </Card.Body>
+                </Card>
+              </Col>
+            </>
+          )}
+        </Row>
+
+        <div className="mt-4 text-center">
+          <small className="text-muted">
+            Make sure you're connected to Hardhat Network (Chain ID: 31337)
+          </small>
+        </div>
+      </Container>
+
+      <footer className="mt-auto py-3 bg-light">
+        <Container>
+          <p className="text-center text-muted mb-0">© 2023 Token Faucet. All rights reserved.</p>
+        </Container>
+      </footer>
+    </div>
   );
 }
 
