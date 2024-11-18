@@ -8,6 +8,8 @@ import RequestTokens from './components/RequestTokens';
 import WithdrawTokens from './components/WithdrawTokens';
 import WalletConnection from './components/WalletConnection';
 import Instructions from './components/Instructions';
+import UrdexLink from './components/UrdexLink';
+import Logo from './components/Logo';
 
 function App() {
   const [status, setStatus] = useState('');
@@ -58,18 +60,20 @@ function App() {
     <div className="d-flex flex-column min-vh-100">
       <Navbar bg="light" expand="lg" className="shadow-sm">
         <Container>
-          <Navbar.Brand href="#home">Token Faucet</Navbar.Brand>
+         
+          <Navbar.Brand href="#home">
+            <Logo /> URDEX
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-            <Nav>
-              {isOwner && <Nav.Link href="#admin">Admin</Nav.Link>}
-            </Nav>
             <WalletConnection onConnect={handleConnect} onDisconnect={handleDisconnect} />
           </Navbar.Collapse>
-
         </Container>
       </Navbar>
 
+   <div className="text-center my-3">
+    <UrdexLink isOwner={isOwner} />
+  </div>
       <Container className="py-5">
         <h1 className="text-center mb-5">URDEX Token Faucet</h1>
         
