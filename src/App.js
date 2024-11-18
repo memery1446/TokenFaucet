@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Web3 from 'web3';
 import { Container, Alert, Navbar, Nav, Card, Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -6,37 +6,52 @@ import DepositTokens from './components/DepositTokens';
 import Whitelist from './components/Whitelist';
 import RequestTokens from './components/RequestTokens';
 import WithdrawTokens from './components/WithdrawTokens';
+import WalletConnection from './components/WalletConnection';
+import Instructions from './components/Instructions';
 
 function App() {
   const [status, setStatus] = useState('');
   const [isOwner, setIsOwner] = useState(false);
+  const [web3, setWeb3] = useState(null);
+  const [userAddress, setUserAddress] = useState('');
+  const tokenAddresses = ['0x5FbDB2315678afecb367f032d93F642f64180aa3', '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'];
 
-  useEffect(() => {
-    const checkOwner = async () => {
-      if (window.ethereum) {
-        const web3 = new Web3(window.ethereum);
-        try {
-          const accounts = await web3.eth.getAccounts();
-          const response = await fetch('/deployedAddresses.json');
-          const addresses = await response.json();
-          const faucetABI = [
-            {
-              "inputs": [],
-              "name": "owner",
-              "outputs": [{"name": "", "type": "address"}],
-              "stateMutability": "view",
-              "type": "function"
-            }
-          ];
-          const faucet = new web3.eth.Contract(faucetABI, addresses.FAUCET_ADDRESS);
-          const owner = await faucet.methods.owner().call();
-          setIsOwner(accounts[0].toLowerCase() === owner.toLowerCase());
-        } catch (error) {
-          console.error('Error checking owner:', error);
+  const checkOwner = useCallback(async (web3Instance, address) => {
+    try {
+      const response = await fetch('/deployedAddresses.json');
+      const addresses = await response.json();
+      const faucetABI = [
+        {
+          "inputs": [],
+          "name": "owner",
+          "outputs": [{"name": "", "type": "address"}],
+          "stateMutability": "view",
+          "type": "function"
         }
-      }
-    };
-    checkOwner();
+      ];
+      const faucet = new web3Instance.eth.Contract(faucetABI, addresses.FAUCET_ADDRESS);
+      const owner = await faucet.methods.owner().call();
+      setIsOwner(address.toLowerCase() === owner.toLowerCase());
+    } catch (error) {
+      console.error('Error checking owner:', error);
+    }
+  }, []);
+
+  const handleConnect = useCallback((web3Instance, address) => {
+    setWeb3(web3Instance);
+    setUserAddress(address);
+    checkOwner(web3Instance, address);
+  }, [checkOwner]);
+
+  const handleDisconnect = useCallback(() => {
+    setWeb3(null);
+    setUserAddress('');
+    setIsOwner(false);
+  }, []);
+
+  const setStatusWithTimeout = useCallback((message) => {
+    setStatus(message);
+    setTimeout(() => setStatus(''), 5000); // Clear status after 5 seconds
   }, []);
 
   return (
@@ -45,17 +60,18 @@ function App() {
         <Container>
           <Navbar.Brand href="#home">Token Faucet</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
-          <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="ms-auto">
-              <Nav.Link href="#home">Home</Nav.Link>
+          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+            <Nav>
               {isOwner && <Nav.Link href="#admin">Admin</Nav.Link>}
             </Nav>
+            <WalletConnection onConnect={handleConnect} onDisconnect={handleDisconnect} />
           </Navbar.Collapse>
+
         </Container>
       </Navbar>
 
       <Container className="py-5">
-        <h1 className="text-center mb-5">Token Faucet</h1>
+        <h1 className="text-center mb-5">URDEX Token Faucet</h1>
         
         {status && (
           <Alert 
@@ -73,8 +89,12 @@ function App() {
             <Card className="shadow-sm">
               <Card.Body>
                 <Card.Title>Request Tokens</Card.Title>
-                <RequestTokens setStatus={setStatus} />
+                <RequestTokens setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
               </Card.Body>
+            </Card>
+            <p></p>
+            <Card className="shadow-sm">
+             <Instructions isOwner={isOwner} tokenAddresses={tokenAddresses} />
             </Card>
           </Col>
 
@@ -84,7 +104,7 @@ function App() {
                 <Card className="shadow-sm h-100">
                   <Card.Body>
                     <Card.Title>Deposit Tokens</Card.Title>
-                    <DepositTokens />
+                    <DepositTokens setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
                   </Card.Body>
                 </Card>
               </Col>
@@ -92,7 +112,7 @@ function App() {
                 <Card className="shadow-sm h-100">
                   <Card.Body>
                     <Card.Title>Withdraw Tokens</Card.Title>
-                    <WithdrawTokens />
+                    <WithdrawTokens setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
                   </Card.Body>
                 </Card>
               </Col>
@@ -100,7 +120,7 @@ function App() {
                 <Card className="shadow-sm">
                   <Card.Body>
                     <Card.Title>Manage Whitelist</Card.Title>
-                    <Whitelist />
+                    <Whitelist setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
                   </Card.Body>
                 </Card>
               </Col>
