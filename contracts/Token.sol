@@ -1,14 +1,10 @@
-// contracts/Token.sol
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract Token is ERC20 {
     constructor(string memory name, string memory symbol) ERC20(name, symbol) {
-        // Mint some initial supply to the deployer
-        // 1 million tokens with 18 decimals
-        _mint(msg.sender, 1000000 * 10 ** decimals());
+        _mint(msg.sender, 1000000 * 10**decimals());
     }
 }
-
