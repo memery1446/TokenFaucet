@@ -91,7 +91,7 @@ export default function WithdrawTokens() {
 
   return (
     <div className="mt-5">
-      <h2>Withdraw Tokens (Owner Only)</h2>
+      <h2>Withdraw Tokens</h2>
       <Form onSubmit={withdrawTokens}>
         <Form.Group className="mb-3">
           <Form.Control

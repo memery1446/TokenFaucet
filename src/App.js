@@ -62,7 +62,7 @@ function App() {
         <Container>
          
           <Navbar.Brand href="#home">
-            <Logo /> URDEX
+            <Logo /> URDEX Faucet
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
@@ -70,12 +70,11 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-
    <div className="text-center my-3">
     <UrdexLink isOwner={isOwner} />
   </div>
       <Container className="py-5">
-        <h1 className="text-center mb-5">URDEX Token Faucet</h1>
+        <h2 className="text-center mb-5">Get tokens for the URDEX Aggregator</h2>
         
         {status && (
           <Alert 
@@ -92,7 +91,7 @@ function App() {
           <Col xs={12}>
             <Card className="shadow-sm">
               <Card.Body>
-                <Card.Title>Request Tokens</Card.Title>
+                <Card.Title className="text-center">Request Tokens</Card.Title>
                 <RequestTokens setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
               </Card.Body>
             </Card>
@@ -107,7 +106,6 @@ function App() {
               <Col md={6}>
                 <Card className="shadow-sm h-100">
                   <Card.Body>
-                    <Card.Title>Deposit Tokens</Card.Title>
                     <DepositTokens setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
                   </Card.Body>
                 </Card>
@@ -115,7 +113,6 @@ function App() {
               <Col md={6}>
                 <Card className="shadow-sm h-100">
                   <Card.Body>
-                    <Card.Title>Withdraw Tokens</Card.Title>
                     <WithdrawTokens setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
                   </Card.Body>
                 </Card>
@@ -123,7 +120,6 @@ function App() {
               <Col xs={12}>
                 <Card className="shadow-sm">
                   <Card.Body>
-                    <Card.Title>Manage Whitelist</Card.Title>
                     <Whitelist setStatus={setStatusWithTimeout} web3={web3} userAddress={userAddress} />
                   </Card.Body>
                 </Card>
@@ -134,14 +130,14 @@ function App() {
 
         <div className="mt-4 text-center">
           <small className="text-muted">
-            Make sure you're connected to Hardhat Network (Chain ID: 31337)
+            Make sure you're connected to the Sepolia Network
           </small>
         </div>
       </Container>
 
       <footer className="mt-auto py-3 bg-light">
         <Container>
-          <p className="text-center text-muted mb-0">© 2023 Token Faucet. All rights reserved.</p>
+          <p className="text-center text-muted mb-0">URDEX Faucet by markemerydev@gmail.com</p>
         </Container>
       </footer>
     </div>

@@ -8,24 +8,30 @@ export default function Instructions({ isOwner, tokenAddresses }) {
 
   return (
     <Alert variant="warning" className="mt-3">
-      <Alert.Heading>Important Instructions</Alert.Heading>
+      <Alert.Heading>To use the URDEX Faucet:</Alert.Heading>
       <p>
-        Please import these token addresses into your MetaMask and clear your activity tab data:
+        1. Link your Metamask to the Sepolia Network. 
       </p>
+      <p>
+        2. Import these addresses into your Metamask wallet:
+      </p>      
       <ul>
         {tokenAddresses.map((address, index) => (
           <li key={index}>{address}</li>
         ))}
       </ul>
+      <p>
+        3. Clear your Metamask activity tab data. 
+      </p>
+      <p>
+        Note: Each address may request both tokens one time. Owner can renew eligibility. 
+      </p>      
       <hr />
       <p className="mb-0">
-        After importing the tokens, or if you encounter errors, make sure to clear your MetaMask activity tab data to ensure smooth interactions with the faucet.
+        ERRORS? Clear your MetaMask activity tab data.
       </p>
-      <p className="mb-0">
-       <p></p>
-        For support, paste this url in another browser: 
-        <p></p>
-        https://support.metamask.io/managing-my-tokens/custom-tokens/how-to-display-tokens-in-metamask/
+            <p className="mb-0">
+        QUESTIONS? Email: markemerydev@gmail.com
       </p>
     </Alert>
   );

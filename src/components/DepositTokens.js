@@ -138,7 +138,7 @@ export default function DepositTokens() {
 
   return (
     <div className="mt-5">
-      <h2>Deposit Tokens (Owner Only)</h2>
+      <h2>Deposit Tokens</h2>
       <Form onSubmit={depositTokens}>
         <Form.Group className="mb-3">
           <Form.Control
