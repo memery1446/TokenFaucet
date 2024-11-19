@@ -5,30 +5,25 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log("Deploying with account:", deployer.address);
 
-  // Deploy tokens
-  const Token = await ethers.getContractFactory("Token");
+  // Existing token addresses on Sepolia
+  const TK1_ADDRESS = "0x83948078E863965393309B4E9e2C112F91f9fB14";
+  const TK2_ADDRESS = "0xd95E02893187B054dFCb7FAC0862420f727CA484";
   
-  console.log("Deploying TK1...");
-  const tk1 = await Token.deploy("Token One", "TK1");
-  await tk1.deployed();
-  console.log("TK1 deployed to:", tk1.address);
-  
-  console.log("Deploying TK2...");
-  const tk2 = await Token.deploy("Token Two", "TK2");
-  await tk2.deployed();
-  console.log("TK2 deployed to:", tk2.address);
+  console.log("Using existing tokens:");
+  console.log("TK1:", TK1_ADDRESS);
+  console.log("TK2:", TK2_ADDRESS);
 
-  // Deploy faucet
-  console.log("Deploying faucet...");
+  // Deploy faucet with existing token addresses
+  console.log("\nDeploying faucet...");
   const Faucet = await ethers.getContractFactory("TokenFaucet");
-  const faucet = await Faucet.deploy(tk1.address, tk2.address);
+  const faucet = await Faucet.deploy(TK1_ADDRESS, TK2_ADDRESS);
   await faucet.deployed();
   console.log("Faucet deployed to:", faucet.address);
 
   // Save addresses
   const addresses = {
-    TK1_ADDRESS: tk1.address,
-    TK2_ADDRESS: tk2.address,
+    TK1_ADDRESS: TK1_ADDRESS,
+    TK2_ADDRESS: TK2_ADDRESS,
     FAUCET_ADDRESS: faucet.address
   };
 
@@ -53,14 +48,14 @@ async function main() {
 
   console.log("\nContract Addresses:");
   console.log("===================");
-  console.log("TK1:", tk1.address);
-  console.log("TK2:", tk2.address);
+  console.log("TK1:", TK1_ADDRESS);
+  console.log("TK2:", TK2_ADDRESS);
   console.log("Faucet:", faucet.address);
-  console.log("\nAddresses saved to public/deployedAddresses.json and src/deployedAddresses.json");
+  
   console.log("\nNext steps:");
-  console.log("1. Update your frontend with these new addresses");
-  console.log("2. Use the depositTokens function to fund the faucet");
-  console.log("   - Approve the Faucet contract to spend your tokens");
+  console.log("1. Update your frontend to use these addresses");
+  console.log("2. Approve the Faucet contract to spend your tokens using the token contracts");
+  console.log("3. Use the depositTokens function to fund the faucet");
   console.log("   - Call depositTokens(true, amount) for TK1");
   console.log("   - Call depositTokens(false, amount) for TK2");
 }

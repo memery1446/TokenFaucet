@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 const UrdexLink = ({ isOwner }) => {
   return (
     <a 
-      href={isOwner ? "#admin" : "https://urdex.exchange"} 
+      href={isOwner ? "#admin" : "https://dex-aggregator-theta.vercel.app/"} 
       target="_blank"
       rel="noopener noreferrer"
       style={{ textDecoration: 'none' }}
