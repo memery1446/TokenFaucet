@@ -1,10 +1,10 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 
-const UrdexLink = ({ isOwner }) => {
+const UrdexLink = () => {
   return (
     <a 
-      href={isOwner ? "#admin" : "https://dex-aggregator-theta.vercel.app/"} 
+      href="https://dex-aggregator-theta.vercel.app/swap"  // Added /swap to the URL
       target="_blank"
       rel="noopener noreferrer"
       style={{ textDecoration: 'none' }}
