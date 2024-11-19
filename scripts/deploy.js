@@ -25,25 +25,6 @@ async function main() {
   await faucet.deployed();
   console.log("Faucet deployed to:", faucet.address);
 
-  // Fund faucet
-  console.log("\nFunding faucet...");
-  const amount = ethers.utils.parseEther("1000");
-  
-  console.log("Transferring TK1...");
-  const tx1 = await tk1.transfer(faucet.address, amount);
-  await tx1.wait();
-  
-  console.log("Transferring TK2...");
-  const tx2 = await tk2.transfer(faucet.address, amount);
-  await tx2.wait();
-
-  // Verify balances
-  const tk1Balance = await tk1.balanceOf(faucet.address);
-  const tk2Balance = await tk2.balanceOf(faucet.address);
-  console.log("\nFaucet balances:");
-  console.log("TK1:", ethers.utils.formatEther(tk1Balance));
-  console.log("TK2:", ethers.utils.formatEther(tk2Balance));
-
   // Save addresses
   const addresses = {
     TK1_ADDRESS: tk1.address,
@@ -51,15 +32,37 @@ async function main() {
     FAUCET_ADDRESS: faucet.address
   };
 
-  if (!fs.existsSync('./public')) {
-    fs.mkdirSync('./public');
-  }
+  // Ensure directories exist
+  const dirs = ['./public', './src'];
+  dirs.forEach(dir => {
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir);
+    }
+  });
 
+  // Save addresses to both locations for frontend access
   fs.writeFileSync(
     "./public/deployedAddresses.json",
     JSON.stringify(addresses, null, 2)
   );
-  console.log("\nAddresses saved to public/deployedAddresses.json");
+  
+  fs.writeFileSync(
+    "./src/deployedAddresses.json",
+    JSON.stringify(addresses, null, 2)
+  );
+
+  console.log("\nContract Addresses:");
+  console.log("===================");
+  console.log("TK1:", tk1.address);
+  console.log("TK2:", tk2.address);
+  console.log("Faucet:", faucet.address);
+  console.log("\nAddresses saved to public/deployedAddresses.json and src/deployedAddresses.json");
+  console.log("\nNext steps:");
+  console.log("1. Update your frontend with these new addresses");
+  console.log("2. Use the depositTokens function to fund the faucet");
+  console.log("   - Approve the Faucet contract to spend your tokens");
+  console.log("   - Call depositTokens(true, amount) for TK1");
+  console.log("   - Call depositTokens(false, amount) for TK2");
 }
 
 main()
@@ -68,3 +71,5 @@ main()
     console.error(error);
     process.exit(1);
   });
+
+  

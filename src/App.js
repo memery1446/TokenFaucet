@@ -16,7 +16,7 @@ function App() {
   const [isOwner, setIsOwner] = useState(false);
   const [web3, setWeb3] = useState(null);
   const [userAddress, setUserAddress] = useState('');
-  const tokenAddresses = ['0x5FbDB2315678afecb367f032d93F642f64180aa3', '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512'];
+  const [tokenAddresses, setTokenAddresses] = useState(['0x5FbDB2315678afecb367f032d93F642f64180aa3', '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512']);
 
   const checkOwner = useCallback(async (web3Instance, address) => {
     try {
@@ -39,10 +39,32 @@ function App() {
     }
   }, []);
 
-  const handleConnect = useCallback((web3Instance, address) => {
-    setWeb3(web3Instance);
-    setUserAddress(address);
-    checkOwner(web3Instance, address);
+  const handleConnect = useCallback(async (web3Instance, address) => {
+    try {
+      const chainId = await web3Instance.eth.getChainId();
+      // Accept both Hardhat (31337) and Sepolia (11155111)
+      if (chainId !== 31337 && chainId !== 11155111) {
+        setStatus('Please switch to either Hardhat or Sepolia network');
+        return;
+      }
+      
+      // If on Sepolia, load addresses from deployedAddresses.json
+      if (chainId === 11155111) {
+        try {
+          const response = await fetch('/deployedAddresses.json');
+          const addresses = await response.json();
+          setTokenAddresses([addresses.TK1_ADDRESS, addresses.TK2_ADDRESS]);
+        } catch (error) {
+          console.error('Error loading Sepolia addresses:', error);
+        }
+      }
+      
+      setWeb3(web3Instance);
+      setUserAddress(address);
+      checkOwner(web3Instance, address);
+    } catch (error) {
+      console.error('Connection error:', error);
+    }
   }, [checkOwner]);
 
   const handleDisconnect = useCallback(() => {
@@ -53,14 +75,13 @@ function App() {
 
   const setStatusWithTimeout = useCallback((message) => {
     setStatus(message);
-    setTimeout(() => setStatus(''), 5000); // Clear status after 5 seconds
+    setTimeout(() => setStatus(''), 5000);
   }, []);
 
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar bg="light" expand="lg" className="shadow-sm">
         <Container>
-         
           <Navbar.Brand href="#home">
             <Logo /> URDEX Faucet
           </Navbar.Brand>
@@ -70,9 +91,9 @@ function App() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-   <div className="text-center my-3">
-    <UrdexLink isOwner={isOwner} />
-  </div>
+      <div className="text-center my-3">
+        <UrdexLink isOwner={isOwner} />
+      </div>
       <Container className="py-5">
         <h2 className="text-center mb-5">Get tokens for the URDEX Aggregator</h2>
         
@@ -130,7 +151,7 @@ function App() {
 
         <div className="mt-4 text-center">
           <small className="text-muted">
-            Make sure you're connected to the Sepolia Network
+            Make sure you're connected to either Hardhat or Sepolia Network
           </small>
         </div>
       </Container>
@@ -145,3 +166,4 @@ function App() {
 }
 
 export default App;
+
