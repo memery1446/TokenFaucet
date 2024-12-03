@@ -13,7 +13,7 @@ export default function Instructions({ isOwner, tokenAddresses }) {
         1. Link your Metamask to the Sepolia Network. 
       </p>
       <p>
-        2. Import these addresses into your Metamask wallet:
+        2. Import the TK1 and TK2 addresses into your Metamask wallet:
       </p>      
       <ul>
         {tokenAddresses.map((address, index) => (
